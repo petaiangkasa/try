@@ -1,0 +1,674 @@
+data
+	title: .asciiz"\n\tMATHEMATICS QUICK QUIZ!!\n"
+	line: .asciiz"_____________________________________"
+	menuPlay: .asciiz"\n1.PLAY"
+	menuExit: .asciiz"\n2.EXIT"
+	prevScores: .asciiz"\t\tPREVIOUS SCORE:"
+	play: .asciiz"\n\n\tPLAY OR EXIT?\n"
+	numberLives: .asciiz"\n\t\t\tCHANCES LEFT:"
+	updateScores: .asciiz"\n\t\t\tSCORES:"
+	posFeedback: .asciiz"\tCORRECT,GOOD!\n"
+	nevFeedback: .asciiz"\tWRONG ANSWER!\n"
+	tryAgain: .asciiz"\n\t1. TRY AGAIN   2.SKIP\n"
+	remember: .asciiz "\nREMINDER TO USE CAPITAL ALPHABET FOR ANSWER!!\n"
+	instruct: .asciiz "\nYOU CAN TRY AGAIN IF YOUR ANSWER IS WRONG\n"
+	instruct2: .asciiz "\nBUT IT WILL ELIMINATE ONE OF YOUR CHANCES,GOOD LUCK!\n\n"
+	answer: .byte 'A','B','C','D'
+	askop: .asciiz"Answer: "
+	answer1: .byte '1','2'
+	quest1: .asciiz"\n\tQ1: 678 + 45\n"
+	q1a: .asciiz"\tA. 756\n"
+	q1b: .asciiz"\tB. 1003\n"
+	q1c: .asciiz"\tC. 866\n"
+	q1d: .asciiz"\tD. 723\n"
+	quest2: .asciiz"\n\tQ2: 8882 - 699\n"
+	q2a: .asciiz"\tA. 8183\n"
+	q2b: .asciiz"\tB. 8456\n"
+	q2c: .asciiz"\tC. 7978\n"
+	q2d: .asciiz"\tD. 8014\n"
+	quest3: .asciiz"\n\tQ3: 42 / 2\n"
+	q3a: .asciiz"\tA. 67\n"
+	q3b: .asciiz"\tB. 21\n"
+	q3c: .asciiz"\tC. 20\n"
+	q3d: .asciiz"\tD. 15\n"
+	quest4: .asciiz"\n\tQ4: 6000 x 4\n"
+	q4a: .asciiz"\tA. 975\n"
+	q4b: .asciiz"\tB. 5689\n"
+	q4c: .asciiz"\tC. 24000\n"
+	q4d: .asciiz"\tD. 67540\n"
+	quest5: .asciiz"\n\tQ5: 2! + 3!\n"
+	q5a: .asciiz"\tA. 8\n"
+	q5b: .asciiz"\tB. 4\n"
+	q5c: .asciiz"\tC. 5\n"
+	q5d: .asciiz"\tD. 10\n"
+	totalscore: .asciiz"\n\nTORTAL SCORE: "
+	score1: .word 0
+	afscore: .asciiz"\n\n\tPRESS 1 TO BACK TO MENU\n\n"
+	reset: .word 0
+	blank: .asciiz " \n\n"
+	HighScore: .asciiz "\t\tEXCELLENT!"
+	LowScore: .asciiz "\t\tKEEP PRATICING!"
+	
+.text
+.globl main
+main:	
+	#display blank 
+	la $a0, blank
+	li $v0, 4
+	syscall
+	
+	#display title
+	la $a0, title
+	li $v0, 4
+	syscall
+	
+	#display line
+	la $a0, line
+	li $v0, 4
+	syscall
+	
+	#display menuPlay
+	la $a0, menuPlay
+	li $v0, 4
+	syscall
+	
+	#display menuExit
+	la $a0, menuExit
+	li $v0, 4
+	syscall
+	
+	#display prevScores
+	la $a0, prevScores
+	li $v0, 4
+	syscall
+	
+	#display the total score from previous game that stores in $t9
+	move $a0, $t9
+	li $v0, 1
+	syscall
+	
+	#reset $t9 = 0 so players can play new game with new score
+	li $t9, 0            
+        move $s0, $t9         
+        sw $s0, reset 
+	
+	#display play
+	la $a0, play
+	li $v0, 4
+	syscall
+	
+	
+	#read players input to start(1) or exit game(2)
+	li $v0, 12
+	syscall
+	la $t0, answer1	#set $t0 to answer1 byte address
+	lb $t1, 0($t0) #load $t1 to value from memory byte address 
+	
+	
+	#set $t8(chances)= 3 and store in $s0
+        li $t8, 3          
+        move $s0, $t8 
+       
+      
+	
+	#if statement if player wants to quit or play
+	beq $t1,$v0,ins	#if $t1 = $v0 go to ins
+	bne $t1,$v0,end_program	#if $t1 =! $v0 go to end program 
+	 
+        
+     ins:
+     	#display blank
+	la $a0, blank
+	li $v0, 4
+	syscall
+        
+        #display remember
+        la $a0, remember
+	li $v0, 4
+	syscall
+	
+	#display instruct
+	la $a0, instruct
+	li $v0, 4
+	syscall
+	
+	#display instruct2
+	la $a0, instruct2
+	li $v0, 4
+	syscall
+        j Q1 #jump to Q1
+        
+        
+        
+     Q1:
+     	#set $t7(score) = 0 
+     	li $t7, 0            
+        move $s0, $t7         
+        sw $s0, reset 
+        
+        #display blank
+        la $a0, blank
+	li $v0, 4
+	syscall
+        
+        #display updateScores (SCORE:)
+        la $a0, updateScores
+	li $v0, 4
+	syscall
+	
+	#display score value that stores in $t7
+	move $a0, $t7
+	li $v0, 1
+	syscall
+	
+	#display numberLives (CHANCES LEFT:)
+        la $a0, numberLives
+	li $v0, 4
+	syscall
+	
+	#display chances value that stores in $t8
+	move $a0, $t8
+	li $v0, 1
+	syscall
+        
+        #display question 1 with their 4 possible answer
+	la $a0, quest1
+	li $v0, 4
+	syscall
+	la $a0, q1a
+	li $v0, 4
+	syscall
+	la $a0, q1b
+	li $v0, 4
+	syscall
+	la $a0, q1c
+	li $v0, 4
+	syscall
+	la $a0, q1d
+	li $v0, 4
+	syscall
+	
+	#display askop (Answer:)
+	la $a0, askop
+	li $v0, 4
+	syscall
+	
+	#read players input answer A B C or D
+	li $v0, 12
+	syscall
+	la $t0, answer	#set $t0 to answer1 address
+	lb $t1, 3($t0)	#load $t1 to value from memory byte address
+	beq $t1, $v0, Right	#if $t1 = $v0 go to Right for right answer
+	bne $t1, $v0, Wrong	#if $t1 =! $v0 go to Wrong for wrong answer
+		
+		Right:
+		addi $t7,$t7,1	# $t7= $t7 + 1 ($t7 will plus 1 to give 1 score for player choosing right answer)
+		
+		#display Positive Feedback
+		li $v0, 4
+		la $a0,posFeedback
+		syscall
+		j Q2	#Jump to Question2
+		
+		Wrong:
+		#display Negative Feedback
+		li $v0, 4
+		la $a0,nevFeedback
+		syscall
+		
+		#If chances less than 1 the game ends
+		li $t2, 2        #set $t2 = 2
+		blt $t8, $t2, EXIT	#if $t8 less than $t2 go to EXIT
+		
+		#display tryAgain or skip
+		li $v0, 4
+		la $a0,tryAgain
+		syscall
+		
+		#read player input to try again(1) or skip(2)
+		li $v0, 12
+		syscall
+		la $t5, answer1	#set $t5 to answer1 address
+		lb $t6, 0($t5) #load $t6 to value from memory byte address
+		
+		beq $t6,$v0,try	#if $t6 = $v0 go to try
+		j Q2 #jump to Question2
+			try:
+			addi $t8,$t8,-1 # $t8= $t8 + (-1) ($t8 will minus 1 to take 1 chances from player)
+			j Q1 #jump to Question1
+		
+		
+
+	Q2:
+	#display blank
+        la $a0, blank
+	li $v0, 4
+	syscall
+        
+        #display updateScores (SCORE:)
+        la $a0, updateScores
+	li $v0, 4
+	syscall
+	
+	#display score value that stores in $t7
+	move $a0, $t7
+	li $v0, 1
+	syscall
+	
+	#display numberLives (CHANCES LEFT:)
+        la $a0, numberLives
+	li $v0, 4
+	syscall
+	
+	#display chances value that stores in $t8
+	move $a0, $t8
+	li $v0, 1
+	syscall
+        
+        #display question 2 with their 4 possible answer
+	la $a0, quest2
+	li $v0, 4
+	syscall
+	la $a0, q2a
+	li $v0, 4
+	syscall
+	la $a0, q2b
+	li $v0, 4
+	syscall
+	la $a0, q2c
+	li $v0, 4
+	syscall
+	la $a0, q2d
+	li $v0, 4
+	syscall
+	
+	#display askop (Answer:)
+	la $a0, askop
+	li $v0, 4
+	syscall
+	
+	#read players input answer A B C or D
+	li $v0, 12
+	syscall
+	lb $t1, 0($t0) #load $t1 to value from memory byte address
+	beq $t1, $v0, Right2	#if $t1 = $v0 go to Right for right answer
+	bne $t1, $v0, Wrong2	#if $t1 =! $v0 go to Wrong for wrong answer
+		Right2:
+		addi $t7,$t7,1	# $t7= $t7 + 1 ($t7 will plus 1 to give 1 score for player choosing right answer)
+		
+		#display Positive Feedback
+		li $v0, 4
+		la $a0,posFeedback
+		syscall
+		j Q3
+		
+		Wrong2:
+		#display Negative Feedback
+		li $v0, 4
+		la $a0,nevFeedback
+		syscall
+		
+		#If chances less than 1 the game ends
+		li $t2, 2        #set $t2 = 2
+		blt $t8, $t2, EXIT	#if $t8 less than $t2 go to EXIT
+		
+		#display tryAgain
+		li $v0, 4
+		la $a0,tryAgain
+		syscall
+		
+		#read player input to try again(1) or skip(2)
+		li $v0, 12
+		syscall
+		la $t5, answer1	#set $t5 to answer1 address
+		lb $t6, 0($t5) #load $t6 to value from memory byte address
+		
+		beq $t6,$v0,try2	#if $t6 = $v0 go to try
+		j Q3 #jump to Question3
+			try2:
+			addi $t8,$t8,-1 # $t8= $t8 + (-1) ($t8 will minus 1 to take 1 chances from player)
+			j Q2 #jump to Question2
+		
+		
+	Q3:
+	#display blank
+        la $a0, blank
+	li $v0, 4
+	syscall
+        
+        #display updateScores (SCORE:)
+        la $a0, updateScores
+	li $v0, 4
+	syscall
+	
+	#display score value that stores in $t7
+	move $a0, $t7
+	li $v0, 1
+	syscall
+	
+	#display numberLives (CHANCES LEFT:)
+        la $a0, numberLives
+	li $v0, 4
+	syscall
+	
+	#display chances value that stores in $t8
+	move $a0, $t8
+	li $v0, 1
+	syscall
+        
+        #display question 3 with their 4 possible answer
+	la $a0, quest3
+	li $v0, 4
+	syscall
+	la $a0, q3a
+	li $v0, 4
+	syscall
+	la $a0, q3b
+	li $v0, 4
+	syscall
+	la $a0, q3c
+	li $v0, 4
+	syscall
+	la $a0, q3d
+	li $v0, 4
+	syscall
+	
+	#display askop (Answer:)
+	la $a0, askop
+	li $v0, 4
+	syscall
+	
+	#read players input answer A B C or D
+	li $v0, 12
+	syscall
+	lb $t1, 1($t0) #load $t1 to value from memory byte address
+	beq $t1, $v0, Right3	#if $t1 = $v0 go to Right for right answer
+	bne $t1, $v0, Wrong3	#if $t1 =! $v0 go to Wrong for wrong answer
+		Right3:
+		addi $t7,$t7,1	# $t7= $t7 + 1 ($t7 will plus 1 to give 1 score for player choosing right answer)
+		
+		#display Positive Feedback
+		li $v0, 4
+		la $a0,posFeedback
+		syscall
+		j Q4
+		
+		Wrong3:
+		#display Negative Feedback
+		li $v0, 4
+		la $a0,nevFeedback
+		syscall
+		
+		#If chances less than 1 the game ends
+		li $t2, 2        #set $t2 = 2
+		blt $t8, $t2, EXIT	#if $t8 less than $t2 go to EXIT
+		
+		#display tryAgain
+		li $v0, 4
+		la $a0,tryAgain
+		syscall
+		
+		#read player input to try again(1) or skip(2)
+		li $v0, 12
+		syscall
+		la $t5, answer1	#load $t5 to answer1 address
+		lb $t6, 0($t5) #load $t6 to value from memory byte address
+		
+		beq $t6,$v0,try3	#if $t6 = $v0 go to try
+		j Q4 #jump to Question4
+			try3:
+			addi $t8,$t8,-1 # $t8= $t8 + (-1) ($t8 will minus 1 to take 1 chances from player)
+			j Q3 #jump to Question3
+		
+		
+	Q4:
+	
+	#display blank
+        la $a0, blank
+	li $v0, 4
+	syscall
+        
+        #display updateScores (SCORE:)
+        la $a0, updateScores
+	li $v0, 4
+	syscall
+	
+	#display score value that stores in $t7
+	move $a0, $t7
+	li $v0, 1
+	syscall
+	
+	#display numberLives (CHANCES LEFT:)
+        la $a0, numberLives
+	li $v0, 4
+	syscall
+	
+	#display chances value that stores in $t8
+	move $a0, $t8
+	li $v0, 1
+	syscall
+        
+        #display question 4 with their 4 possible answer
+	la $a0, quest4
+	li $v0, 4
+	syscall
+	la $a0, q4a
+	li $v0, 4
+	syscall
+	la $a0, q4b
+	li $v0, 4
+	syscall
+	la $a0, q4c
+	li $v0, 4
+	syscall
+	la $a0, q4d
+	li $v0, 4
+	syscall
+	
+	
+	#display askop (Answer:)
+	la $a0, askop
+	li $v0, 4
+	syscall
+	
+	#read players input answer A B C or D
+	li $v0, 12
+	syscall
+	lb $t1, 2($t0) #load $t1 to value from memory byte address
+	beq $t1, $v0, Right4	#if $t1 = $v0 go to Right for right answer
+	bne $t1, $v0, Wrong4	#if $t1 =! $v0 go to Wrong for wrong answer
+		Right4:
+		addi $t7,$t7,1	# $t7= $t7 + 1 ($t7 will plus 1 to give 1 score for player choosing right answer)
+		
+		#display Positive Feedback
+		li $v0, 4
+		la $a0,posFeedback
+		syscall
+		j Q5
+		
+		Wrong4:
+		#display Negative Feedback
+		li $v0, 4
+		la $a0,nevFeedback
+		syscall
+		
+		#If chances less than 1 the game ends
+		li $t2, 2        #set $t2 = 2
+		blt $t8, $t2, EXIT	#if $t8 less than $t2 go to EXIT
+		
+		#display tryAgain
+		li $v0, 4
+		la $a0,tryAgain
+		syscall
+		
+		#read player input to try again(1) or skip(2)
+		li $v0, 12
+		syscall
+		la $t5, answer1	#load $t5 to answer1 address
+		lb $t6, 0($t5) #load $t6 to value from memory byte address
+		
+		beq $t6,$v0,try4	#if $t6 = $v0 go to try
+		j Q5 #jump to Question5
+			try4:
+			addi $t8,$t8,-1 # $t8= $t8 + (-1) ($t8 will minus 1 to take 1 chances from player)
+			j Q4 #jump to Question4
+		
+
+	Q5:
+	#display blank
+        la $a0, blank
+	li $v0, 4
+	syscall
+        
+        #display updateScores (SCORE:)
+        la $a0, updateScores
+	li $v0, 4
+	syscall
+	
+	#display score value that stores in $t7
+	move $a0, $t7
+	li $v0, 1
+	syscall
+	
+	#display numberLives (CHANCES LEFT:)
+        la $a0, numberLives
+	li $v0, 4
+	syscall
+	
+	#display chances value that stores in $t8
+	move $a0, $t8
+	li $v0, 1
+	syscall
+        
+        #display question 5 with their 4 possible answer
+	la $a0, quest5
+	li $v0, 4
+	syscall
+	la $a0, q5a
+	li $v0, 4
+	syscall
+	la $a0, q5b
+	li $v0, 4
+	syscall
+	la $a0, q5c
+	li $v0, 4
+	syscall
+	la $a0, q5d
+	li $v0, 4
+	syscall
+	
+	#display askop (Answer:)
+	la $a0, askop
+	li $v0, 4
+	syscall
+	
+	#read players input answer A B C or D
+	li $v0, 12
+	syscall
+	lb $t1, 0($t0) #load $t1 to value from memory byte address
+	beq $t1, $v0, Right5	#if $t1 = $v0 go to Right for right answer
+	bne $t1, $v0, Wrong5	#if $t1 =! $v0 go to Wrong for wrong answer
+		Right5:
+		addi $t7,$t7,1	# $t7= $t7 + 1 ($t7 will plus 1 to give 1 score for player choosing right answer)
+		
+		#display Positive Feedback
+		li $v0, 4
+		la $a0,posFeedback
+		syscall
+		j EXIT
+		
+		Wrong5:
+		#display Negative Feedback
+		li $v0, 4
+		la $a0,nevFeedback
+		syscall
+		
+		#If chances less than 1 the game ends
+		li $t2, 2        #set $t2 = 2
+		blt $t8, $t2, EXIT	#if $t8 less than $t2 go to EXIT
+		
+		#display tryAgain
+		li $v0, 4
+		la $a0,tryAgain
+		syscall
+		
+		#read player input to try again(1) or skip(2)
+		li $v0, 12
+		syscall
+		la $t5, answer1	#load $t5 to answer1 address
+		lb $t6, 0($t5) #load $t6 to value from memory byte address
+		
+		beq $t6,$v0,try5	#if $t6 = $v0 go to try
+		j EXIT #jump to EXIT
+			try5:
+			addi $t8,$t8,-1 # $t8= $t8 + (-1) ($t8 will minus 1 to take 1 chances from player)
+			j Q5 #jump to Question5
+			
+
+	EXIT:
+	#total up the final score
+	add $t9,$t9,$t7	#$t9(final score)= $t9 + $t7
+	sw $t9,score1
+	
+	#if score less than 4 a low score message will apear
+	li $t1, 4      #$t4 = 4  
+	blt $t9, $t1, lessThan4 #if $t9 (final score) less than $t1 go to lessThan4
+	
+	#Display total score
+	la $a0, totalscore
+	li $v0, 4
+	syscall
+	
+	#display final score value that stores in $t9
+	move $a0, $t9
+	li $v0, 1
+	syscall
+	
+	#display High Score message
+	la $a0, HighScore
+	li $v0, 4
+	syscall
+	j Done #jump to Done
+	
+	
+	lessThan4:
+	#Display total score
+	la $a0, totalscore
+	li $v0, 4
+	syscall
+
+	#display final score value that stores in $t9
+	move $a0, $t9
+	li $v0, 1
+	syscall
+	
+	#display Low Score message
+	la $a0, LowScore
+	li $v0, 4
+	syscall
+	j Done #jump to Done
+	
+	
+
+	Done:
+	#Display after score message (back to menu)
+	la $a0, afscore
+	li $v0, 4
+	syscall
+ 	
+ 	#read player input to back to menu(1)
+	li $v0, 12
+	syscall
+	la $t0, answer1 #set $t0 to answer1 byte address
+	lb $t1, 0($t0) #load $t1 to value from memory byte address
+		
+		
+	
+	beq $t1,$v0,main	#if $t1 = $v0 go to main
+	bne $t1,$v0,Done	#if $t1 =! $v0 go to Done
+	
+	end_program:
+	#end the game
+	li $v0, 10
+	syscall
+	
